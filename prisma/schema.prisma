@@ -37,19 +37,6 @@ model Session {
   @@map("sessions")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  password      String
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-
-  @@map("users")
-}
-
 model VerificationToken {
   identifier String
   token      String
@@ -57,4 +44,114 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
+}
+
+model User {
+  id               String            @id @default(cuid())
+  nickname         String            @default("user")
+  email            String            @unique
+  password         String
+  emailVerified    DateTime?         @map("email_verified")
+  image            String?
+  tags             String[]
+  accounts         Account[]
+  sessions         Session[]
+  activities       Activity[]
+  reviews          Review[]
+  favorites        Favorite[]
+  questionRequests QuestionRequest[]
+  answers          Answer[]
+  activityRequests ActivityRequest[]
+  likes            Like[]
+
+  @@map("users")
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  activityId String
+}
+
+model QuestionRequest {
+  id       String   @id @default(cuid())
+  title    String
+  content  String
+  location String
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers  Answer[]
+}
+
+model Answer {
+  id         String          @id @default(cuid())
+  content    String
+  images     String[]
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId String
+  question   QuestionRequest @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  content    String?
+  rating     Int
+}
+
+model Activity {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  startDate    DateTime
+  endDate      DateTime
+  maximumCount Int
+  thumbnails   String[]
+  tags         String[]
+  locations    String[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  likes            Like[]
+  reviews          Review[]
+  activityRequests ActivityRequest[]
+
+  views Int @default(0)
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  favorites Favorite[]
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVE
+  REJECT
+}
+
+model ActivityRequest {
+  id            String        @id @default(cuid())
+  requestUserId String
+  requestUser   User          @relation(fields: [requestUserId], references: [id], onDelete: Cascade)
+  activityId    String
+  activity      Activity      @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  status        RequestStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Like {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
 }
