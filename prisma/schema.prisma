@@ -59,10 +59,13 @@ model User {
   activities       Activity[]
   reviews          Review[]
   favorites        Favorite[]
-  questionRequests QuestionRequest[]
+  questionRequests Question[]
   answers          Answer[]
   activityRequests ActivityRequest[]
   likes            Like[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("users")
 }
@@ -73,9 +76,12 @@ model Favorite {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
   activityId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model QuestionRequest {
+model Question {
   id       String   @id @default(cuid())
   title    String
   content  String
@@ -83,16 +89,22 @@ model QuestionRequest {
   userId   String
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   answers  Answer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Answer {
-  id         String          @id @default(cuid())
+  id         String   @id @default(cuid())
   content    String
   images     String[]
   userId     String
-  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   questionId String
-  question   QuestionRequest @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Review {
@@ -103,6 +115,9 @@ model Review {
   activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
   content    String?
   rating     Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Activity {
@@ -154,4 +169,7 @@ model Like {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   activityId String
   activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
