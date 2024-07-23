@@ -86,3 +86,32 @@ export const deleteAnswer = async (
     return { success: false, message: '답변 삭제 중에 에러가 발생하였습니다.' }
   }
 }
+
+
+export const loadMoreAnswers = async (questionId: string, cursorId: string | null): Promise<{ answers: Answer[], cursorId: string | null }> => {
+  try {
+    const answers = await db.answer.findMany({
+      where: { questionId },
+      include: {
+        user: true,  
+      },
+      take: 10,
+      ...(cursorId && {
+        cursor: {
+          id: cursorId,
+        },
+        skip: 1,
+      }),
+      orderBy: {
+        createdAt: 'asc',  
+      },
+    });
+
+    const lastAnswer = answers[answers.length - 1];
+    const newCursorId = lastAnswer ? lastAnswer.id : null;
+
+    return { answers, cursorId: newCursorId };
+  } catch (error) {
+    throw new Error('답변을 더 가져오는 중에 에러가 발생하였습니다.');
+  }
+};

@@ -50,3 +50,33 @@ export const toggleFavorite = async (
     }
   }
 }
+
+export const loadMoreFavorites = async (cursorId: string | null): Promise<{ favorites: Favorite[], cursorId: string | null }> => {
+  try {
+    const userId = await getCurrentUserId();
+
+    const favorites = await db.favorite.findMany({
+      where: { userId },
+      include: {
+        activity: true, 
+      },
+      take: 10,
+      ...(cursorId && {
+        cursor: {
+          id: cursorId,
+        },
+        skip: 1,
+      }),
+      orderBy: {
+        createdAt: 'asc',  
+      },
+    });
+
+    const lastFavorite = favorites[favorites.length - 1];
+    const newCursorId = lastFavorite ? lastFavorite.id : null;
+
+    return { favorites, cursorId: newCursorId };
+  } catch (error) {
+    throw new Error('좋아요 목록을 더 가져오는 중에 에러가 발생하였습니다.');
+  }
+};
