@@ -89,3 +89,116 @@ export const logout = async (): Promise<ActionType<null>> => {
     return { success: false, message: '로그아웃에 실패 하였습니다.' }
   }
 }
+
+export const editNickname = async ({
+  userId,
+  newNickname,
+}: {
+  userId: string
+  newNickname: string
+}): Promise<ActionType<User>> => {
+  try {
+    const updatedUser = await db.user.update({
+      where: { id: userId },
+      data: { nickname: newNickname },
+    })
+
+    if (!updatedUser)
+      return { success: false, message: '닉네임 수정에 실패하였습니다.' }
+
+    return {
+      success: true,
+      message: '닉네임 수정에 성공하였습니다.',
+      data: updatedUser,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: '닉네임 수정 중에 에러가 발생하였습니다.',
+    }
+  }
+}
+
+export const editPassword = async ({
+  userId,
+  newPassword,
+}: {
+  userId: string
+  newPassword: string
+}): Promise<ActionType<User>> => {
+  try {
+    const updatedUser = await db.user.update({
+      where: { id: userId },
+      data: { password: newPassword },
+    })
+
+    if (!updatedUser)
+      return { success: false, message: '비밀번호 수정에 실패하였습니다.' }
+
+    return {
+      success: true,
+      message: '비밀번호 수정에 성공하였습니다.',
+      data: updatedUser,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: '비밀번호 수정 중에 에러가 발생하였습니다.',
+    }
+  }
+}
+
+export const editTags = async ({
+  userId,
+  tags,
+}: {
+  userId: string
+  tags: string[]
+}): Promise<ActionType<User>> => {
+  try {
+    const updatedUser = await db.user.update({
+      where: { id: userId },
+      data: { tags },
+    })
+
+    if (!updatedUser)
+      return { success: false, message: '태그 수정에 실패하였습니다.' }
+
+    return {
+      success: true,
+      message: '태그 수정에 성공하였습니다.',
+      data: updatedUser,
+    }
+  } catch (error) {
+    return { success: false, message: '태그 수정 중에 에러가 발생하였습니다.' }
+  }
+}
+
+export const editImage = async ({
+  userId,
+  url,
+}: {
+  userId: string
+  url: string
+}): Promise<ActionType<User>> => {
+  try {
+    const updatedUser = await db.user.update({
+      where: { id: userId },
+      data: { image: url },
+    })
+
+    if (!updatedUser)
+      return { success: false, message: '프로필 이미지 수정에 실패하였습니다.' }
+
+    return {
+      success: true,
+      message: '프로필 이미지 수정에 성공하였습니다.',
+      data: updatedUser,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: '프로필 이미지 수정 중에 에러가 발생하였습니다.',
+    }
+  }
+}
