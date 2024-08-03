@@ -8,32 +8,18 @@ import toggleFavorite from '@/app/action/favorite';
 import { cn } from '@/lib/utils';
 import { formatDateRange } from '@/utils/formatDateRange';
 import { deleteActivity } from '@/app/action/activity';
+import { ActivityWithFavoriteAndCount } from '@/type';
 import MyActivityKebab from './my-activity-kebab';
 
 interface Props {
-  activityId: string;
-  title: string;
-  views: number;
-  maximumCount: number;
-  startDate: Date;
-  endDate: Date;
-  favoriteCount: number;
-  isFavorite: boolean;
+  activity: ActivityWithFavoriteAndCount;
 }
 
-export default function MyActivityCard({
-  activityId,
-  title,
-  views,
-  maximumCount,
-  startDate,
-  endDate,
-  favoriteCount,
-  isFavorite,
-}: Props) {
+export default function MyActivityCard({ activity }: Props) {
+  const { id, title, views, maximumCount, startDate, endDate, _count, isFavorite } = activity;
   const dateRange = formatDateRange(startDate, endDate);
   const [favorite, setFavorite] = useState(isFavorite);
-  const [favoCount, setFavoCount] = useState(favoriteCount);
+  const [favoCount, setFavoCount] = useState(_count.favorites);
   const [isPending, startTransition] = useTransition();
 
   const handleToggleFavorite = async (e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) => {
@@ -43,7 +29,7 @@ export default function MyActivityCard({
       return favorite ? prev - 1 : prev + 1;
     });
 
-    const action = await toggleFavorite(activityId);
+    const action = await toggleFavorite(id);
     if (!action.success) {
       toast.error(action.message);
       setFavorite((prev) => !prev);
@@ -52,7 +38,7 @@ export default function MyActivityCard({
 
   const onDelete = () => {
     startTransition(async () => {
-      const action = await deleteActivity(activityId);
+      const action = await deleteActivity(id);
       if (!action.success) {
         toast.error(action.message);
         return;
@@ -65,7 +51,7 @@ export default function MyActivityCard({
     <div className="relative">
       <ImageCard
         isPending={isPending}
-        activityId={activityId}
+        activityId={id}
         title={title}
         date={dateRange}
         participants={maximumCount}
@@ -84,7 +70,7 @@ export default function MyActivityCard({
         }
       />
       <div className="absolute top-1 right-1">
-        <MyActivityKebab handleDelete={onDelete} />
+        <MyActivityKebab activity={activity} handleDelete={onDelete} />
       </div>
     </div>
   );

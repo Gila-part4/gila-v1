@@ -19,11 +19,16 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
+import { Activity } from '@prisma/client';
+
+import ActivityEditForm from './activity-edit-form';
+
 interface Props {
   handleDelete: () => void;
+  activity: Activity;
 }
 
-export default function MyActivityKebab({ handleDelete }: Props) {
+export default function MyActivityKebab({ handleDelete, activity }: Props) {
   return (
     <Dialog>
       <DropdownMenu>
@@ -40,10 +45,21 @@ export default function MyActivityKebab({ handleDelete }: Props) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DialogContent>
+      <DialogContent className="bg-white h-screen overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>????</DialogTitle>
+          <DialogTitle>
+            <div />
+          </DialogTitle>
         </DialogHeader>
+        <ActivityEditForm
+          activityId={activity.id}
+          title={activity.title}
+          description={activity.description}
+          location={activity.location}
+          tags={activity.tags}
+          images={activity.thumbnails}
+          maximumCount={activity.maximumCount}
+        />
       </DialogContent>
     </Dialog>
   );

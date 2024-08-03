@@ -43,16 +43,7 @@ export default function MyActivityList({ myActivities, activityCursorId }: Props
       <ul className="flex flex-col gap-3 w-full">
         {activityList.map((myActivity) => (
           <li key={myActivity.id}>
-            <MyActivityCard
-              title={myActivity.title}
-              views={myActivity.views}
-              maximumCount={myActivity.maximumCount}
-              startDate={myActivity.startDate}
-              endDate={myActivity.endDate}
-              activityId={myActivity.id}
-              favoriteCount={myActivity._count.favorites}
-              isFavorite={myActivity.isFavorite}
-            />
+            <MyActivityCard activity={myActivity} />
           </li>
         ))}
         <div ref={observer} />
