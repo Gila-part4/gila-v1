@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Command,
@@ -26,6 +26,7 @@ import { Compass } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function LocationSelectDrawerForNav() {
+  const [isDrawOpen, setIsDrawOpen] = useState(false);
   const [province, setProvince] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const router = useRouter();
@@ -34,6 +35,16 @@ export default function LocationSelectDrawerForNav() {
   const cities = useMemo(() => {
     return province ? LOCATIONS[province] : [];
   }, [province]);
+
+  const handleSelectProvince = (provinceLocation: string) => {
+    if (provinceLocation === '세종특별자치시') {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('location', provinceLocation);
+      router.push(`?${params.toString()}`);
+    } else {
+      setProvince(provinceLocation);
+    }
+  };
 
   const handleSelectLocation = (location: string) => {
     if (province) {
@@ -59,8 +70,19 @@ export default function LocationSelectDrawerForNav() {
     router.push(`?${params.toString()}`);
   };
 
+  useEffect(() => {
+    const locationValue = searchParams.get('location');
+    if (!locationValue) {
+      setProvince(null);
+      setSelectedLocation(null);
+    } else {
+      setSelectedLocation(locationValue);
+      setIsDrawOpen(false);
+    }
+  }, [searchParams]);
+
   return (
-    <Drawer>
+    <Drawer open={isDrawOpen} onOpenChange={setIsDrawOpen}>
       <DrawerTrigger asChild>
         <Button
           type="button"
@@ -90,13 +112,7 @@ export default function LocationSelectDrawerForNav() {
                         <CommandItem
                           key={_province}
                           value={_province}
-                          onSelect={(value) => {
-                            setSelectedLocation(value);
-                            setProvince(value);
-                            const params = new URLSearchParams(searchParams.toString());
-                            params.set('location', value);
-                            router.push(`?${params.toString()}`);
-                          }}
+                          onSelect={handleSelectProvince}
                           className={cn(
                             province === _province && 'bg-gray-200',
                             'flex items-center justify-center p-2 font-medium rounded-lg shadow-md hover:bg-gray-100',
