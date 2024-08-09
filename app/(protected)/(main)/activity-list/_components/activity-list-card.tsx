@@ -20,7 +20,7 @@ export default function ActivityListCard({ activity }: Props) {
         <div className="flex justify-center w-full h-full row-span-2 px-2 pt-2 rounded-md">
           <div className="relative w-full h-full rounded-md">
             <Image
-              src={thumbnails[0] || '/default-profile-image.png'}
+              src={thumbnails[0] || '/default-carousel-image.png'}
               alt="thumbnail"
               fill
               sizes="(max-width: 768px) 100vw"
