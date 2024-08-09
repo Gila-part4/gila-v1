@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,6 +39,13 @@ export default function SortingDropdown({ sorts }: Props) {
     router.push(`${pathname}?${createQueryString(name, value)}`);
     setCurrentSort(value);
   };
+
+  useEffect(() => {
+    const sortValue = searchParams.get('sort');
+    if (sortValue) {
+      setCurrentSort(sortValue);
+    }
+  }, [searchParams]);
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
